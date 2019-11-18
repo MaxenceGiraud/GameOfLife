@@ -20,8 +20,14 @@ def next_step(support):
 
     return next
 
+def step_plot(support):
+
+    plt.imshow(support,cmap="gray")
+    plt.show()
+
+
 def main():
-    support = np.zeros((4, 4), dtype=bool)
+    support = np.zeros((20, 20), dtype=bool)
     support[1,1] = "True"
     support[1,2] = "True"
     support[2,1] = "True"
@@ -29,9 +35,8 @@ def main():
     support[0,0] = "True"
     support[0,1] = "True"
 
-    print(support,"\n\n",next_step(support))
-    plt.imshow(support)
-    plt.show()
-    
+    step_plot(support)
+    step_plot(next_step(support))
+
 if __name__ == "__main__":
     main()
