@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import time
 
 def next_step(support):
     '''
@@ -18,6 +19,14 @@ def next_step(support):
     next = np.logical_or(neighbors==3,np.logical_and(support,neighbors==2))
 
     return next
+
+def compute_movie(support,nstep):
+    ''' Returns the evolution of a board "support" after nstep generations '''
+    history = np.zeros((T,support.shape[0], support.shape[1]),dtype=bool)
+    for n in range(nstep):
+        history[n,:,:] = support
+        support = next_step(support)   
+    return history  
 
 def load_grid(file):
     '''
@@ -39,7 +48,23 @@ def game_movie():
     '''
     create a movie from a certain grid 
     '''
-    return
+    n = 5
+    movie=[]
+    grid = load_grid("./grid1.txt")
+    movie.append(plt.imshow(grid,animated=True))
+    
+    fig = plt.figure()
+
+    for i in np.arange(n):
+        
+        grid = next_step(grid)
+        movie.append([plt.imshow(grid,animated=True)])
+
+    
+    animation.ArtistAnimation(fig, movie, interval=50, blit=True,repeat_delay=1000)   
+    plt.show()
+
+    return 
 
 def step_plot(support):
     '''
@@ -50,13 +75,7 @@ def step_plot(support):
 
 def main():
 
-    #support2 = np.ones((20, 20),dtype=bool)
-    #print(support2,"\n\n\n")
-    #print(next_step(support2))
-    #step_plot(next_step(support2))
-
-    print(load_grid("./grid1.txt")) 
-    #grid = np.loadtxt("./grid1.txt",dtype=bool)
-    #print(grid)
+    game_movie()
+    
 if __name__ == "__main__":
     main()
