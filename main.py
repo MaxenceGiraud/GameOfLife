@@ -16,13 +16,12 @@ def next_step(support):
     neighbors[1:-1,1:-1] = (support_int[:-2,:-2] + support_int[:-2,1:-1] + support_int[:-2,2:] + support_int[1:-1,:-2] + support_int[1:-1,2:]  + support_int[2:,:-2]   + support_int[2:,1:-1]  + support_int[2:,2:]) 
 
     ## Go to next step using the number of neighbors and the value of each cell
-    next = np.logical_or(neighbors==3,np.logical_and(support,neighbors==2))
+    return np.logical_or(neighbors==3,np.logical_and(support,neighbors==2))
 
-    return next
 
 def compute_movie(support,nstep):
     ''' Returns the evolution of a board "support" after nstep generations '''
-    history = np.zeros((T,support.shape[0], support.shape[1]),dtype=bool)
+    history = np.zeros((nstep,support.shape[0], support.shape[1]),dtype=bool)
     for n in range(nstep):
         history[n,:,:] = support
         support = next_step(support)   
@@ -44,6 +43,100 @@ def load_grid(file):
 
     return grid
 
+def plotcells(X, filename=False):
+    ''' Plots a board of Game of Life + optionally saving the figure '''
+    LW = 0.5
+    if(X.shape[0]>200): 
+        USE_IMSHOW = True
+    else:
+        USE_IMSHOW = False
+        
+    fig = plt.figure(figsize=(16,9),dpi=120)    
+    if USE_IMSHOW == False:    
+        # Light blue lines as cells boundaries
+        plt.pcolor(X.T, cmap="gray_r",
+                   edgecolors='cadetblue', linewidths=LW)
+    else:
+        plt.imshow(X[:,::-1].T, cmap="gray_r")        
+    plt.gca().get_xaxis().set_visible(False)
+    plt.gca().get_yaxis().set_visible(False)
+    fig.tight_layout()
+    
+    if (filename != False): 
+        plt.savefig(filename,dpi=90)
+    else:
+        plt.show()
+
+def makeMovie(history,filename,trim=False):
+    ''' Create the movie from a history of a game of life'''
+    # History is the boolean history (non inverted i.e. True = alive)
+    # Inversion is done in the colormap
+    # Filename should be *.mp4
+    
+    FIGSIZE = (16,9)
+    DPI = 240
+    LW = 0.5
+    
+    
+    if(history.shape[1]>200): 
+        USE_IMSHOW = True
+    else:
+        USE_IMSHOW = False
+        
+    # Trim boundaries
+    if trim: 
+        history = history[:,3:-3,3:-3]
+    
+    # Create the plot and its starting point
+    print("Create initial plot")
+    my_cmap = plt.get_cmap('gray_r')
+    fig = plt.figure(figsize=FIGSIZE,dpi=DPI)
+    ax = fig.add_subplot(111)
+    
+    if USE_IMSHOW == False:
+    # First option : use pcolor
+        pc = ax.pcolor(history[0,:,:].T, cmap=my_cmap,
+                       edgecolors='cadetblue', linewidths=LW)
+    else:        
+    # Second option : use imshow
+        im  = ax.imshow(history[0,:,::-1].T, cmap=my_cmap)
+    
+    cnt = ax.text(0.01, 0.99, str(0),color='red', fontsize=30,
+            verticalalignment='top', horizontalalignment='left',
+            transform=ax.transAxes)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+    fig.tight_layout()
+    
+    
+    # The function as it is called at the n-th iteration
+    # It directly modifies the data within the image
+    def update_img(n):
+        # Revert and scale from 0-1 to 0-255
+        print('Frame '+str(n))
+        if USE_IMSHOW == False:
+            new_color = my_cmap(255*history[n,:,:].T.ravel()) 
+            pc.update({'facecolors':new_color})
+        else:
+            im.set_data(history[n,:,::-1].T)
+        #
+        cnt.set_text(str(n))
+    #    # if needed, can modify the field of view
+    #    fov = 
+    #    ax.set_xlim()
+    #    ax.set_ylim()
+    
+        return True
+    
+    # Create the animation and save it
+    print("Make animation")
+    ani = animation.FuncAnimation(fig, update_img, history.shape[0], 
+                                  interval=30) # 30ms per frame
+    writer = animation.FFMpegWriter(fps=30, bitrate=5000)
+    print("Save movie")
+    ani.save(filename, writer = writer, dpi=DPI) 
+    print("Saved")
+
 def game_movie():
     '''
     create a movie from a certain grid 
@@ -64,7 +157,7 @@ def game_movie():
     animation.ArtistAnimation(fig, movie, interval=50, blit=True,repeat_delay=1000)   
     plt.show()
 
-    return 
+    return movie
 
 def step_plot(support):
     '''
@@ -75,7 +168,17 @@ def step_plot(support):
 
 def main():
 
-    game_movie()
-    
+    #game_movie()
+    test = np.zeros((100,100),dtype=bool)
+    test[10,10]=True
+    test[10,11]=True
+    test[10,12]=True
+    test[10,13]=True
+    test[11,13]=True
+    test[11,13]=True
+
+    m = compute_movie(test,100)
+    makeMovie(m,"test.mp4")
+
 if __name__ == "__main__":
     main()
