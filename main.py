@@ -139,15 +139,7 @@ def makeMovie(history,filename,trim=False):
     writer = animation.FFMpegWriter(fps=30, bitrate=5000)
     print("Save movie")
     ani.save(filename, writer = writer, dpi=DPI) 
-    print("Saved")
-
-
-def step_plot(support):
-    '''
-    plot one step of the game
-    '''
-    plt.imshow(support,cmap="gray")
-    plt.show()  
+    print("Saved") 
 
 def main():
 
