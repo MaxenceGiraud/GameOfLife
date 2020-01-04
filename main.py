@@ -137,28 +137,6 @@ def makeMovie(history,filename,trim=False):
     ani.save(filename, writer = writer, dpi=DPI) 
     print("Saved")
 
-def game_movie():
-    '''
-    create a movie from a certain grid 
-    '''
-    n = 5
-    movie=[]
-    grid = load_grid("./grid1.txt")
-    movie.append(plt.imshow(grid,animated=True))
-    
-    fig = plt.figure()
-
-    for i in np.arange(n):
-        
-        grid = next_step(grid)
-        movie.append([plt.imshow(grid,animated=True)])
-
-    
-    animation.ArtistAnimation(fig, movie, interval=50, blit=True,repeat_delay=1000)   
-    plt.show()
-
-    return movie
-
 def step_plot(support):
     '''
     plot one step of the game
