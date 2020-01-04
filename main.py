@@ -5,6 +5,7 @@ import time
 
 def next_step(support):
     '''
+    Compute next step of the Game with the 3 following rules
     Any live cell with two or three neighbors survives.
     Any dead cell with three live neighbors becomes a live cell.
     All other live cells die in the next generation. Similarly, all other dead cells stay dead.
@@ -20,7 +21,9 @@ def next_step(support):
 
 
 def compute_movie(support,nstep):
-    ''' Returns the evolution of a board "support" after nstep generations '''
+    ''' 
+    Returns the evolution of a board "support" after nstep generations 
+    '''
     history = np.zeros((nstep,support.shape[0], support.shape[1]),dtype=bool)
     for n in range(nstep):
         history[n,:,:] = support
@@ -31,6 +34,7 @@ def load_grid(file):
     '''
     Load a grid from a file
     '''
+    ## TODO/ TO correct
     coordonates =[]
     with open(file, 'r') as f:
         content = f.readlines()
@@ -44,7 +48,9 @@ def load_grid(file):
     return grid
 
 def plotcells(X, filename=False):
-    ''' Plots a board of Game of Life + optionally saving the figure '''
+    ''' 
+    Plots a board of Game of Life + optionally saving the figure
+    '''
     LW = 0.5
     if(X.shape[0]>200): 
         USE_IMSHOW = True
@@ -68,7 +74,9 @@ def plotcells(X, filename=False):
         plt.show()
 
 def makeMovie(history,filename,trim=False):
-    ''' Create the movie from a history of a game of life'''
+    ''' 
+    Create the movie from a history of a game of life
+    '''
     # History is the boolean history (non inverted i.e. True = alive)
     # Inversion is done in the colormap
     # Filename should be *.mp4
@@ -119,12 +127,8 @@ def makeMovie(history,filename,trim=False):
             pc.update({'facecolors':new_color})
         else:
             im.set_data(history[n,:,::-1].T)
-        #
+
         cnt.set_text(str(n))
-    #    # if needed, can modify the field of view
-    #    fov = 
-    #    ax.set_xlim()
-    #    ax.set_ylim()
     
         return True
     
@@ -136,6 +140,7 @@ def makeMovie(history,filename,trim=False):
     print("Save movie")
     ani.save(filename, writer = writer, dpi=DPI) 
     print("Saved")
+
 
 def step_plot(support):
     '''
