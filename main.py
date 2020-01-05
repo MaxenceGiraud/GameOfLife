@@ -9,6 +9,8 @@ def next_step(support):
     Any live cell with two or three neighbors survives.
     Any dead cell with three live neighbors becomes a live cell.
     All other live cells die in the next generation. Similarly, all other dead cells stay dead.
+    @param : support, np.array(dtype=bool), a board of game of life
+    @return : np.array(dtype=bool) of same size as support, next step of the game of life
     '''
     ## Compute the number of neighbour for each cell
 
@@ -23,6 +25,9 @@ def next_step(support):
 def compute_movie(support,nstep):
     ''' 
     Returns the evolution of a board "support" after nstep generations 
+    @param : support, np.array(dtype=bool), a board of game of life
+    @nstep : int, number of step you want the game of life to played
+    @return : history of the game, array of nstep size containing each step
     '''
     history = np.zeros((nstep,support.shape[0], support.shape[1]),dtype=bool)
     for n in range(nstep):
@@ -50,6 +55,9 @@ def load_grid(file):
 def plotcells(X, filename=False):
     ''' 
     Plots a board of Game of Life + optionally saving the figure
+    @param X : np.array(dtype=bool), a board of the game
+    @param : filename: if not false save the figure to the name you assigned it
+    @return : nothing, just plot the board (new window)
     '''
     LW = 0.5
     if(X.shape[0]>200): 
@@ -73,13 +81,14 @@ def plotcells(X, filename=False):
     else:
         plt.show()
 
-def makeMovie(history,filename,trim=False):
+def makeMovie(history,filename):
     ''' 
     Create the movie from a history of a game of life
+    @param : history, history of the game of life you want to save
+    @param ; filename, string, name of the file (should be *.mp4)
     '''
     # History is the boolean history (non inverted i.e. True = alive)
     # Inversion is done in the colormap
-    # Filename should be *.mp4
     
     FIGSIZE = (16,9)
     DPI = 240
@@ -90,10 +99,6 @@ def makeMovie(history,filename,trim=False):
         USE_IMSHOW = True
     else:
         USE_IMSHOW = False
-        
-    # Trim boundaries
-    if trim: 
-        history = history[:,3:-3,3:-3]
     
     # Create the plot and its starting point
     print("Create initial plot")
