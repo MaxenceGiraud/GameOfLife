@@ -1,0 +1,18 @@
+
+version: 2
+jobs:
+  build: 
+    docker:
+      - image: circleci/python:3.7.3
+    steps:
+      - checkout
+      - run:
+          command: |
+            sudo pip3 install pylint pylint-exit  radon numpy matplotlib
+            printf "\n \n"
+            set +e
+            python3 -m unittest main.py
+            radon cc main.py
+            radon hal main.py
+            printf "\n \n"
+            pylint main.py || pylint-exit $?
