@@ -1,7 +1,7 @@
+import unittest
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import time
 
 def next_step(support):
     '''
@@ -140,6 +140,15 @@ def makeMovie(history,filename,trim=False):
     print("Save movie")
     ani.save(filename, writer = writer, dpi=DPI) 
     print("Saved") 
+
+class Unittest(unittest.TestCase):
+    def test_next_step_AllDead(self):
+        self.assertTrue(np.all(next_step(np.zeros((100,100),dtype=bool)) == np.zeros((100,100),dtype=bool)))
+
+    def test_next_step_AllAlive(self):
+        self.assertTrue(np.all(next_step(np.ones((100,100),dtype=bool)) == np.zeros((100,100),dtype=bool)))
+
+
 
 def main():
 
