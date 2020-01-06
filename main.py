@@ -48,23 +48,73 @@ def compute_movie(support, nstep):
     return history
 
 
-def load_grid(file):
+def load_grid(filename):
     '''
     Load a grid from a file
+    see http://www.conwaylife.com/wiki/RLE
+    @param : filename : the file you want to load
+    @return : np.array(), board of the loaded file
     '''
-    # TODO/ TO correct
-    coordonates = []
-    with open(file, 'r') as f:
-        content = f.readlines()
-        for lign in content[1:]:
-            coordonates.append([int(lign[0]), int(lign[2])])
+    
+    # Open file and cast it into a unique string
+    f = open(filename, "r")
+    s = ''
 
-    grid = np.zeros((max(np.array(coordonates)[
-                    :, 0]) * 10, max(np.array(coordonates)[:, 0]) * 10), dtype=bool)
-    for [x, y] in coordonates:
-        grid[x][y] = True
+    while True:
+        l = f.readline()
+        if l == '':             # Empty indicates end of file. An empty line would be '\n'
+            break
+        if l[0] == '#':
+            continue
+        if l[0] == 'x':
+            continue
+        s = s + l[:-1]   # To remove EOL
+    f.close()
 
-    return grid
+    # Create matrix
+    SHAPE_MAX = (2500, 2500)
+    B = np.zeros(SHAPE_MAX).astype(bool)
+
+    # We parse each character and decide accordingly what to do
+    # If the character is a digit, we keep going until we reach 'b' or 'o'
+    curX, curY = 0, 0
+    qs = ''
+
+    for c in s:
+        # End of file
+        if c == '':
+            break
+
+        # Next Line
+        if c == '$':
+
+            q = 1 if qs == '' else int(qs)
+            curY += q
+            curX = 0
+            qs = ''
+
+        # Digit (check ascii code for a digit from 0 to 9)
+        if ord(c) > 47 and ord(c) < 58:  #
+            qs = qs + c
+
+        # Alive (o) or Dead (b) cell
+        if c == 'b' or c == 'o':
+            q = 1 if qs == '' else int(qs)
+            for i in range(q):
+                B[curX, curY] = False if c == 'b' else True
+                curX += 1
+            qs = ''
+
+    posX, posY = (10, 10)
+    BshapeY = max(np.where(sum(B) > 0)[0]) + 1
+    BshapeX = max(np.where(sum(B.T) > 0)[0]) + 1
+
+    B = B[0:BshapeX, 0:BshapeY]
+
+    C = np.zeros((3 * B.shape[0], 3 * B.shape[1]))
+    C[B.shape[0]:(2 * B.shape[0]), B.shape[1]:(2 * B.shape[1])] = np.copy(B)
+
+    return C.astype(bool)
 
 
 def plotcells(X, filename=False):
@@ -75,24 +125,15 @@ def plotcells(X, filename=False):
     @return : nothing, just plot the board (new window)
     '''
     LW = 0.5
-    if(X.shape[0] > 200):
-        USE_IMSHOW = True
-    else:
-        USE_IMSHOW = False
 
     fig = plt.figure(figsize=(16, 9), dpi=120)
-    if not USE_IMSHOW:
-        # Light blue lines as cells boundaries
-        plt.pcolor(X.T, cmap="gray_r",
-                   edgecolors='cadetblue', linewidths=LW)
-    else:
-        plt.imshow(X[:, ::-1].T, cmap="gray_r")
+    plt.imshow(X[:, ::-1].T, cmap="gray_r")
     plt.gca().get_xaxis().set_visible(False)
     plt.gca().get_yaxis().set_visible(False)
     fig.tight_layout()
 
     if (filename):
-        plt.savefig(filename, dpi=90)
+        plt.savefig(filename)
     else:
         plt.show()
 
@@ -136,7 +177,7 @@ def makeMovie(history, filename):
     ax.get_yaxis().set_visible(False)
     fig.tight_layout()
 
-    # The function as it is called at the n-th iteration
+    # The functionc as it is called at the n-th iteration
     # It directly modifies the data within the image
 
     def update_img(n):
@@ -191,9 +232,13 @@ def main():
     test[11, 13] = True
     test[11, 13] = True
 
-    m = compute_movie(test, 100)
-    makeMovie(m, "test.mp4")
+    # = compute_movie(test, 100)
+    #makeMovie(m, "test.mp4")
+    a = load_grid("breeder1.rle")
+    m = compute_movie(a, 20)
+    makeMovie(m, "breeder.mp4")
 
 
+    # plotcells(a)
 if __name__ == "__main__":
     main()
