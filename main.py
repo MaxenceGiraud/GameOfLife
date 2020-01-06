@@ -1,3 +1,4 @@
+import sys
 import unittest
 import numpy as np
 import matplotlib.pyplot as plt
@@ -204,22 +205,11 @@ class Unittest(unittest.TestCase):
 
 def main():
 
-    # game_movie()
-    test = np.zeros((100, 100), dtype=bool)
-    test[10, 10] = True
-    test[10, 11] = True
-    test[10, 12] = True
-    test[10, 13] = True
-    test[11, 13] = True
-    test[11, 13] = True
+    rle_file, nstep,video_file  = sys.argv[1:3]
 
-    # = compute_movie(test, 100)
-    #makeMovie(m, "test.mp4")
-    a = load_grid("breeder1.rle")
-    m = compute_movie(a, 20)
-    makeMovie(m, "breeder.mp4")
+    grid = load_grid(rle_file)
+    movie = compute_movie(grid,nstep)
+    makeMovie(movie,video_file)
 
-
-    # plotcells(a)
 if __name__ == "__main__":
     main()
