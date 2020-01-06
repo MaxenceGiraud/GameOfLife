@@ -151,24 +151,12 @@ def makeMovie(history, filename):
     DPI = 240
     LW = 0.5
 
-    if(history.shape[1] > 200):
-        USE_IMSHOW = True
-    else:
-        USE_IMSHOW = False
-
     # Create the plot and its starting point
-    print("Create initial plot")
     my_cmap = plt.get_cmap('gray_r')
     fig = plt.figure(figsize=FIGSIZE, dpi=DPI)
     ax = fig.add_subplot(111)
 
-    if not USE_IMSHOW:
-        # First option : use pcolor
-        pc = ax.pcolor(history[0, :, :].T, cmap=my_cmap,
-                       edgecolors='cadetblue', linewidths=LW)
-    else:
-        # Second option : use imshow
-        im = ax.imshow(history[0, :, ::-1].T, cmap=my_cmap)
+    im = ax.imshow(history[0, :, ::-1].T, cmap=my_cmap)
 
     cnt = ax.text(0.01, 0.99, str(0), color='red', fontsize=30,
                   verticalalignment='top', horizontalalignment='left',
@@ -182,19 +170,12 @@ def makeMovie(history, filename):
 
     def update_img(n):
         # Revert and scale from 0-1 to 0-255
-        print('Frame ' + str(n))
-        if not USE_IMSHOW:
-            new_color = my_cmap(255 * history[n, :, :].T.ravel())
-            pc.update({'facecolors': new_color})
-        else:
-            im.set_data(history[n, :, ::-1].T)
-
+        im.set_data(history[n, :, ::-1].T)
         cnt.set_text(str(n))
-
         return True
 
     # Create the animation and save it
-    print("Make animation")
+    print("Making animation")
     ani = animation.FuncAnimation(fig, update_img, history.shape[0],
                                   interval=30)  # 30ms per frame
     writer = animation.FFMpegWriter(fps=30, bitrate=5000)
