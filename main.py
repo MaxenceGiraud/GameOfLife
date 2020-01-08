@@ -1,4 +1,4 @@
-import sys
+import sys, getopt
 import unittest
 import numpy as np
 import matplotlib.pyplot as plt
@@ -203,13 +203,35 @@ class Unittest(unittest.TestCase):
                     (100, 100), dtype=bool)))
 
 
-def main():
+def main(argv):
 
+    '''
     rle_file, nstep,video_file  = sys.argv[1:3]
 
-    grid = load_grid(rle_file)
+    
+    '''
+    inputfile = ''
+    outputfile = ''
+    nstep = ''
+    try:
+        opts, args = getopt.getopt(argv,"hi:o:s:",["ifile=","ofile=","nstep="])
+    except getopt.GetoptError:
+        print('main.py -i <inputfile.rle> -o <outputfile.mp4> -s <numberofsteps>')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print('main.py -i <inputfile.rle> -o <outputfile.mp4> -s <numberofsteps>')
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            inputfile = arg
+        elif opt in ("-o", "--ofile"):
+            outputfile = arg
+        elif opt in ("-s", "--steps"):
+            nstep = arg
+
+    grid = load_grid(inputfile)
     movie = compute_movie(grid,nstep)
-    makeMovie(movie,video_file)
+    makeMovie(movie,outputfile)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
