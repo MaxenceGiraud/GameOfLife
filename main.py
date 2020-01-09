@@ -1,4 +1,5 @@
-import sys, getopt
+import sys
+import getopt
 import unittest
 import numpy as np
 import matplotlib.pyplot as plt
@@ -56,7 +57,7 @@ def load_grid(filename):
     @param : filename : the file you want to load
     @return : np.array(), board of the loaded file
     '''
-    
+
     # Open file and cast it into a unique string
     f = open(filename, "r")
     s = ''
@@ -106,7 +107,6 @@ def load_grid(filename):
                 curX += 1
             qs = ''
 
-    posX, posY = (10, 10)
     BshapeY = max(np.where(sum(B) > 0)[0]) + 1
     BshapeX = max(np.where(sum(B.T) > 0)[0]) + 1
 
@@ -125,7 +125,6 @@ def plotcells(X, filename=False):
     @param : filename: if not false save the figure to the name you assigned it
     @return : nothing, just plot the board (new window)
     '''
-    LW = 0.5
 
     fig = plt.figure(figsize=(16, 9), dpi=120)
     plt.imshow(X[:, ::-1].T, cmap="gray_r")
@@ -139,7 +138,7 @@ def plotcells(X, filename=False):
         plt.show()
 
 
-def makeMovie(history, filename):
+def makeMovie(history, filename, fps=5):
     '''
     Create the movie from a history of a game of life
     @param : history, history of the game of life you want to save
@@ -150,7 +149,6 @@ def makeMovie(history, filename):
 
     FIGSIZE = (16, 9)
     DPI = 240
-    LW = 0.5
 
     # Create the plot and its starting point
     my_cmap = plt.get_cmap('gray_r')
@@ -159,7 +157,7 @@ def makeMovie(history, filename):
 
     im = ax.imshow(history[0, :, ::-1].T, cmap=my_cmap)
 
-    cnt = ax.text(0.01, 0.99, str(0), color='red', fontsize=30,
+    cnt = ax.text(0.01, 0.99, str(0), color='blue', fontsize=30,
                   verticalalignment='top', horizontalalignment='left',
                   transform=ax.transAxes)
     ax.get_xaxis().set_visible(False)
@@ -170,6 +168,7 @@ def makeMovie(history, filename):
     # It directly modifies the data within the image
 
     def update_img(n):
+        print('Frame ' + str(n))
         # Revert and scale from 0-1 to 0-255
         im.set_data(history[n, :, ::-1].T)
         cnt.set_text(str(n))
@@ -177,10 +176,9 @@ def makeMovie(history, filename):
 
     # Create the animation and save it
     print("Making animation")
-    ani = animation.FuncAnimation(fig, update_img, history.shape[0],
-                                  interval=30)  # 30ms per frame
-    writer = animation.FFMpegWriter(fps=30, bitrate=5000)
-    print("Save movie")
+    ani = animation.FuncAnimation(fig, update_img, history.shape[0])
+    writer = animation.FFMpegWriter(fps, bitrate=2000)
+    print("Saving movie")
     ani.save(filename, writer=writer, dpi=DPI)
     print("Saved")
 
@@ -205,16 +203,14 @@ class Unittest(unittest.TestCase):
 
 def main(argv):
 
-    '''
-    rle_file, nstep,video_file  = sys.argv[1:3]
-
-    
-    '''
     inputfile = ''
     outputfile = ''
     nstep = ''
+
     try:
-        opts, args = getopt.getopt(argv,"hi:o:s:",["ifile=","ofile=","nstep="])
+        opts = getopt.getopt(
+            argv, "hi:o:s:", [
+                "ifile=", "ofile=", "nstep="])[0]
     except getopt.GetoptError:
         print('main.py -i <inputfile.rle> -o <outputfile.mp4> -s <numberofsteps>')
         sys.exit(2)
@@ -230,8 +226,9 @@ def main(argv):
             nstep = arg
 
     grid = load_grid(inputfile)
-    movie = compute_movie(grid,nstep)
-    makeMovie(movie,outputfile)
+    movie = compute_movie(grid, int(nstep))
+    makeMovie(movie, outputfile)
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
