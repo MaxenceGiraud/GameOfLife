@@ -1,0 +1,3 @@
+[submodule "GameOfLife-Oracles"]
+	path = GameOfLife-Oracles
+	url = https://github.com/MaxenceGiraud/GameOfLife-Oracles
