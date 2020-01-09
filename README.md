@@ -14,7 +14,7 @@ Project done By Maxence Giraud
 python3 main.py -i inputfile -o outputfile -s numberofsteps
 
 ### Simple example
-python3 main.py -i breeder.rle breader.mp4 -s 300
+python3 main.py -i breeder.rle -o breader.mp4 -s 300
 
 ```
 
