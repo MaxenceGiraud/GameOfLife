@@ -10,18 +10,28 @@ Project done By Maxence Giraud
 
 ## How to use 
 
-```python
-python3 main.py -i inputfile -o outputfile -s numberofsteps
+### From the command line
+```bash
+python3 GameOfLife/gameoflife.py -i inputfile -o outputfile -s numberofsteps
 
 ### Simple example
-python3 main.py -i breeder.rle -o breader.mp4 -s 300
+python3 GameOfLife/gameoflife.py -i breeder.rle -o breader.mp4 -s 300
+```
 
+### Using python
+```python
+import GameOfLife as gof
+
+nsteps = 300
+grid = gof.load_grid("breader.rle")
+movie = gof.compute_movie(grid, 300)
+gof.makeMovie(movie, "breader.mp4")
 ```
 
 ### unittest
 To launch unittest : 
 ```python 
-python3 -m unittest main.py
+python3 -m unittest tests/gof_test.py
 ```
 
 ### Input files 

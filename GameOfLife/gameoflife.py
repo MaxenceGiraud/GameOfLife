@@ -1,6 +1,5 @@
 import sys
 import getopt
-import unittest
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -19,16 +18,7 @@ def next_step(support):
 
     neighbors = np.zeros(support.shape)
     support_int = support.astype(int)
-    neighbors[1:-1,
-              1:-1] = (support_int[:-2,
-                                   :-2] + support_int[:-2,
-                                                      1:-1] + support_int[:-2,
-                                                                          2:] + support_int[1:-1,
-                                                                                            :-2] + support_int[1:-1,
-                                                                                                               2:] + support_int[2:,
-                                                                                                                                 :-2] + support_int[2:,
-                                                                                                                                                    1:-1] + support_int[2:,
-                                                                                                                                                                        2:])
+    neighbors[1:-1,1:-1] = (support_int[:-2, :-2] + support_int[:-2, 1:-1] + support_int[:-2,2:] + support_int[1:-1,:-2] + support_int[1:-1, 2:] + support_int[2:,:-2] + support_int[2:,1:-1] + support_int[2:,2:])
 
     # Go to next step using the number of neighbors and the value of each cell
     return np.logical_or(
@@ -181,24 +171,6 @@ def makeMovie(history, filename, fps=5):
     print("Saving movie")
     ani.save(filename, writer=writer, dpi=DPI)
     print("Saved")
-
-
-class Unittest(unittest.TestCase):
-    def test_next_step_AllDead(self):
-        self.assertTrue(
-            np.all(
-                next_step(
-                    np.zeros(
-                        (100, 100), dtype=bool)) == np.zeros(
-                    (100, 100), dtype=bool)))
-
-    def test_next_step_AllAlive(self):
-        self.assertTrue(
-            np.all(
-                next_step(
-                    np.ones(
-                        (100, 100), dtype=bool)) == np.zeros(
-                    (100, 100), dtype=bool)))
 
 
 def main(argv):
